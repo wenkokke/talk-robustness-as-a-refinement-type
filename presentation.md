@@ -1,20 +1,6 @@
-<!--!>
-    TODO:
-    - brief discussion of refinement types
-      “they’re types refined by an SMT-checked proposition”
-    - talk about limitations of SMT solvers
-    - talk about linearisation
-    - talk about liquid haskell
-    - talk about overhead from F* encoding in Z3
-    - talk about performance issues with Z3
-    - talk about future work
-    - talk about refinement types to rule out feeding tito into the network
-      “there’s more uses to this approach, for instance, what happens when we feed this image into the network? well, according to our features, it’s got lots of grey, and no green… so it’s a cat! but that’s unfair, our network has never seen a raccoon…”
-<---->
-
 # [fit] Robustness as a Refinement Type
 
-### [fit] *Wen Kokke*, Ekaterina Komendantskaya, and Daniel Kienitz
+### [fit] *Wen Kokke*, Ekaterina Komendantskaya, Daniel Kienitz, <br /> Robert Atkey, and David Aspinall
 
 #### Lab for AI and Verification, Heriot-Watt University
 
@@ -351,11 +337,11 @@ F\* then compiles everything it knows about this program down to a Z3 query, whi
 (define-fun classify ((x1 Real) (x2 Real)) Real
   (ite (>= (- (+ (* x1 0.5) (* x2 0.5)) 0.9) 0.0) 1.0 0.0))
 (define-fun doggy ((x Real)) Bool (and (<= 0.9 x) (<= x 1.1)))
-(assert (forall ((x1 Real) (x2 Real))
-  (=> (and (doggy x1) (doggy x2)) (= (classify x1 x2) 1.0))))
+(assert (exists ((x1 Real) (x2 Real))
+  (=> (and (doggy x1) (doggy x2)) (not (= (classify x1 x2) 1.0)))))
 (check-sat)
 
-> sat ;; it works! your network is totally robust! gj!
+> unsat ;; it works! your network is totally robust! gj!
 ```
 
 ---
